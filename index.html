@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Skrip Konten Affiliate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF and html2canvas for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .light-mode-bg {
+            background: #36D1DC;
+            background: -webkit-linear-gradient(to right, #5B86E5, #36D1DC);
+            background: linear-gradient(to right, #5B86E5, #36D1DC);
+        }
+        .dark-mode-bg {
+            background: #232526;
+            background: -webkit-linear-gradient(to right, #414345, #232526);
+            background: linear-gradient(to right, #414345, #232526);
+        }
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        }
+        .dark .card:hover {
+             box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.07), 0 4px 6px -2px rgba(255, 255, 255, 0.04);
+        }
+        .btn-primary {
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <script>
+        // Function to apply theme
+        function applyTheme(theme) {
+            const body = document.body;
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                body.classList.remove('light-mode-bg');
+                body.classList.add('dark-mode-bg');
+            } else { // light
+                document.documentElement.classList.remove('dark');
+                body.classList.add('light-mode-bg');
+                body.classList.remove('dark-mode-bg');
+            }
+        }
+
+        // Set initial theme on page load
+        const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light mode
+        document.addEventListener('DOMContentLoaded', () => applyTheme(savedTheme));
+    </script>
+</head>
+<body class="text-gray-800 light-mode-bg transition-colors duration-300">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        
+        <!-- Header -->
+        <header class="text-center mb-8 relative">
+            <h1 class="text-3xl md:text-4xl font-bold text-white text-shadow">Generator Skrip Konten Affiliate</h1>
+            <p class="text-white/80 mt-2">Buat skrip promosi produk dengan cepat dan mudah.</p>
+            <!-- Theme Toggle Button -->
+            <div class="absolute top-0 right-0">
+                <button id="themeToggleBtn" type="button" class="inline-flex items-center justify-center w-10 h-10 bg-white/20 dark:bg-slate-700/50 rounded-full text-white dark:text-slate-300 hover:bg-white/30 dark:hover:bg-slate-700/80">
+                    <i class="fas fa-sun hidden dark:inline-block"></i>
+                    <i class="fas fa-moon dark:hidden"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-white/30 dark:border-slate-700/50">
+            
+            <!-- Input Form -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Product Input -->
+                <div class="col-span-1 md:col-span-2">
+                    <label for="productInput" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        <i class="fas fa-link mr-2 text-sky-600 dark:text-sky-400"></i>Link Produk / Nama Produk
+                    </label>
+                    <input type="text" id="productInput" placeholder="Masukkan link atau nama produk (contoh: iPhone 15 Pro)" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 ml-1">Silakan isi link produk atau tambahkan nama produk.</p>
+                </div>
+                
+                <!-- Number of Results -->
+                <div>
+                    <label for="resultCount" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        <i class="fas fa-list-ol mr-2 text-sky-600 dark:text-sky-400"></i>Jumlah Hasil
+                    </label>
+                    <select id="resultCount" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <option>1</option>
+                        <option>2</option>
+                        <option selected>3</option>
+                    </select>
+                </div>
+
+                <!-- Language Style -->
+                <div>
+                    <label for="languageStyle" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        <i class="fas fa-paint-brush mr-2 text-sky-600 dark:text-sky-400"></i>Gaya Bahasa
+                    </label>
+                    <select id="languageStyle" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <option value="persuasif">Persuasif</option>
+                        <option value="kasual">Kasual</option>
+                        <option value="profesional">Profesional</option>
+                        <option value="informatif">Informatif</option>
+                        <option value="storytelling">Storytelling</option>
+                    </select>
+                </div>
+
+                <!-- Product Category -->
+                <div>
+                    <label for="productCategory" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        <i class="fas fa-tags mr-2 text-sky-600 dark:text-sky-400"></i>Kategori Produk
+                    </label>
+                    <select id="productCategory" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <option>Elektronik</option>
+                        <option>Home Living</option>
+                        <option>Makanan dan Minuman</option>
+                        <option>Fashion</option>
+                        <option>Kesehatan</option>
+                        <option>Otomotif</option>
+                        <option>Perawatan Kecantikan</option>
+                        <option>Ibu dan Bayi</option>
+                        <option>Perlengkapan Kebersihan</option>
+                    </select>
+                </div>
+
+                <!-- Content Length -->
+                <div>
+                    <label for="contentLength" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        <i class="fas fa-ruler-horizontal mr-2 text-sky-600 dark:text-sky-400"></i>Panjang Tulisan
+                    </label>
+                    <select id="contentLength" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <option value="pendek">Pendek (2 Paragraf)</option>
+                        <option value="sedang">Sedang (4 Paragraf)</option>
+                        <option value="panjang">Panjang (6 Paragraf)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col md:flex-row gap-4">
+                <button id="generateBtn" class="w-full md:w-auto flex-grow bg-sky-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-sky-700 btn-primary flex items-center justify-center shadow-lg">
+                    <i class="fas fa-cogs mr-2"></i>Generate Script
+                </button>
+                <div id="exportButtonsContainer" class="flex flex-col md:flex-row gap-4 w-full md:w-auto hidden">
+                    <button id="exportWordBtn" class="w-full md:w-auto bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 btn-primary flex items-center justify-center shadow-lg">
+                        <i class="fas fa-file-word mr-2"></i>Export Word
+                    </button>
+                    <button id="exportPdfBtn" class="w-full md:w-auto bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 btn-primary flex items-center justify-center shadow-lg">
+                        <i class="fas fa-file-pdf mr-2"></i>Export PDF
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Loading Spinner -->
+            <div id="loading" class="text-center my-6 hidden">
+                <i class="fas fa-spinner fa-spin text-3xl text-white"></i>
+                <p class="mt-2 text-white/90">Sedang membuat skrip...</p>
+            </div>
+            
+            <!-- Notification -->
+            <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg hidden transition-opacity duration-300">
+                Teks berhasil disalin!
+            </div>
+        </main>
+        
+        <!-- Results Section -->
+        <section id="results" class="mt-8">
+            <!-- Generated content will be injected here -->
+        </section>
+
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        // --- DOM ELEMENTS ---
+        const generateBtn = document.getElementById('generateBtn');
+        const exportButtonsContainer = document.getElementById('exportButtonsContainer');
+        const exportWordBtn = document.getElementById('exportWordBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const resultsContainer = document.getElementById('results');
+        const loadingSpinner = document.getElementById('loading');
+        const notification = document.getElementById('notification');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+        // --- EXPANDED & RESTRUCTURED TEMPLATES ---
+        const hooks = {
+            all: ["Stop scrolling! Kamu harus lihat ini.", "Sumpah, ini penemuan terbaikku bulan ini.", "Capek cari produk yang gitu-gitu aja? Ini beda!", "Perhatian! Ada barang bagus yang wajib kamu tahu.", "Awas keracunan! Aku nemu barang super oke.", "Jangan di-skip kalau kamu nggak mau nyesel!", "Ini dia jawaban dari semua masalahmu.", "Akhirnya nemu juga produk yang kayak gini!"],
+            Elektronik: ["Upgrade gadgetmu sekarang juga!", "Teknologi canggih yang bikin hidup lebih mudah.", "Baterai boros? Performa lemot? Ini solusinya.", "Gadget ini bakal mengubah caramu beraktivitas."],
+            Fashion: ["Mau tampil stylish tanpa effort? Sini merapat!", "Bikin OOTD-mu makin kece dengan item ini.", "Kunci tampil percaya diri ada di sini.", "Update gayamu dengan koleksi terbaru ini!"],
+            'Home Living': ["Bikin rumah jadi senyaman surga.", "Dekorasi simpel, tapi efeknya luar biasa.", "Solusi buat rumah yang lebih rapi dan estetik.", "Rumah auto-glowing dengan perabotan ini."],
+            'Perawatan Kecantikan': ["Rahasia kulit glowing dan sehat akhirnya terungkap!", "Bye-bye kulit kusam! Halo kulit cerah!", "Investasi terbaik untuk kulitmu di masa depan.", "Skincare routine-mu butuh produk ini."],
+            'Perlengkapan Kebersihan': ["Bikin kerjaan bersih-bersih jadi 10x lebih cepat!", "Rumah bersih kinclong tanpa capek? Bisa banget!", "Ucapkan selamat tinggal pada kuman dan kotoran!", "Rahasia rumah selalu rapi dan bersih."]
+        };
+        const ctas = {
+            all: ["Jangan sampai kehabisan, klik link di bio sekarang!", "Info lengkap dan link pembelian ada di keranjang kuning!", "Cek sekarang juga sebelum promonya berakhir!", "Yuk, upgrade sekarang! Klik link di bio!", "Tunggu apa lagi? Checkout sekarang juga!", "Amankan produkmu sebelum stok habis!", "Miliki sekarang juga, klik link di bio!", "Jangan tunda lagi, checkout sekarang!"],
+            Elektronik: ["Lihat spesifikasi lengkapnya di link bio!", "Amankan gadget impianmu sekarang juga!", "Dapatkan teknologinya sekarang!"],
+            Fashion: ["Miliki gayamu sekarang, klik link di bio!", "Langsung checkout biar nggak ketinggalan tren!", "Jadi pusat perhatian, klik link di bio!"],
+            'Home Living': ["Wujudkan rumah impianmu, klik link di bio!", "Bikin rumah makin nyaman, checkout sekarang!", "Dekorasi rumahmu sekarang!"],
+            'Perawatan Kecantikan': ["Dapatkan kulit impianmu, klik link di bio!", "Mulai perjalanan kulit sehatmu hari ini!", "Rawat dirimu, checkout sekarang!"],
+            'PerlengkapanKebersihan': ["Bikin rumah kinclong sekarang juga, klik link di bio!", "Checkout sekarang dan nikmati rumah bersih setiap hari!", "Mulai hidup bersih, klik link di bio!"]
+        };
+        const bodies = {
+            pendek: [
+                `Aku jamin kamu pasti butuh [PRODUK] ini. Dibuat untuk menyelesaikan [MASALAH], produk ini benar-benar mengubah cara aku [AKTIVITAS]. Materialnya premium dan fungsinya sangat bisa diandalkan.\n\nIni bukan cuma sekadar barang, tapi investasi untuk [TUJUAN_INVESTASI]. Kualitasnya sebanding banget sama harganya, apalagi kalau kamu manfaatkan promo yang sedang berjalan.`,
+                `Kalau kamu cari [KATEGORI] yang berkualitas, [PRODUK] ini adalah jawabannya. Desainnya yang [SIFAT_DESAIN] membuatnya cocok untuk berbagai suasana, sementara build quality-nya terasa sangat kokoh.\n\nFungsi utamanya untuk [MANFAAT_UTAMA] benar-benar terasa. Ini adalah pilihan cerdas yang tidak akan kamu sesali. Percaya deh, ini worth it banget untuk dimiliki.`,
+                `Jangan tertipu dengan tampilannya yang sederhana, karena [PRODUK] ini punya kekuatan besar. Produk ini dirancang untuk efisiensi maksimal, membantumu menghemat waktu dan tenaga setiap hari.\n\nDengan fitur-fitur cerdasnya, [PRODUK] ini menjadi solusi praktis untuk kebutuhan [KATEGORI]. Kualitasnya sudah terbukti dan banyak direkomendasikan.`
+            ],
+            sedang: [
+                `Awalnya aku sempat ragu, apa benar [PRODUK] ini sebagus review-reviewnya? Banyak produk sejenis yang ternyata cuma bagus di iklan. Tapi rasa penasaran membuatku akhirnya mencoba sendiri.\n\nDan ternyata, semua keraguan itu sirna! Sejak pertama kali pakai, aku langsung merasakan bedanya. [PRODUK] ini punya [FITUR1] yang tidak dimiliki produk lain, membuatnya sangat superior.\n\nMaterial [MATERIAL] yang digunakan juga memberikan kesan mewah sekaligus kokoh. Ini bukan produk yang akan rusak dalam beberapa bulan. Kamu bisa merasakan sendiri kualitasnya saat memegangnya.\n\nBagi kamu yang serius mencari [KATEGORI] terbaik, aku sangat merekomendasikan ini. Ini bukan pengeluaran, tapi investasi untuk kenyamanan dan kepuasan jangka panjang.`,
+                `Mencari [KATEGORI] yang sempurna itu seperti mencari jarum dalam tumpukan jerami. Sulit! Tapi pencarianku berakhir setelah bertemu dengan [PRODUK].\n\nProduk ini secara brilian menggabungkan antara estetika dan fungsionalitas. Desainnya yang [SIFAT_DESAIN] sangat memanjakan mata, cocok untuk kamu yang peduli dengan detail.\n\nNamun, keindahannya tidak mengorbankan fungsi. [PRODUK] ini terbukti sangat andal untuk [CONTOH_PENGGUNAAN]. Semua fiturnya bekerja dengan sempurna dan intuitif.\n\nJadi, jika kamu sudah lelah dengan produk yang biasa-biasa saja dan ingin sesuatu yang benar-benar istimewa, ini adalah jawabannya. Jangan sia-siakan waktumu lagi untuk mencari.`,
+                `Mari kita bicara jujur. Seringkali kita membeli [KATEGORI] hanya karena tren, tapi akhirnya jarang terpakai karena tidak praktis. Nah, [PRODUK] ini benar-benar berbeda.\n\nSetiap detail dari produk ini dirancang dengan memikirkan pengguna. Mulai dari [FITUR1] yang memudahkan penggunaan, hingga [FITUR2] yang menjamin keamanannya.\n\nAku sudah menggunakannya dalam berbagai situasi, dan [PRODUK] ini tidak pernah mengecewakan. Performanya konsisten dan build quality-nya sangat bisa diandalkan untuk jangka panjang.\n\nIni adalah produk yang akan benar-benar kamu gunakan setiap hari, bukan hanya jadi penghuni lemari. Sebuah pilihan fungsional yang juga akan meningkatkan kualitas hidupmu.`
+            ],
+            panjang: [
+                `Izinkan aku bercerita tentang sebuah perjalanan. Perjalanan mencari [KATEGORI] yang tidak hanya memenuhi ekspektasi, tapi melampauinya. Aku telah mencoba berbagai merek, dari yang murah hingga yang mahal, namun selalu ada 'tapi'-nya.\n\nAda yang desainnya bagus tapi ringkih. Ada yang fiturnya lengkap tapi boros daya. Ada juga yang kokoh tapi desainnya ketinggalan zaman. Aku hampir menyerah dan berpikir bahwa produk yang sempurna itu tidak ada.\n\nSampai akhirnya, seorang teman merekomendasikan [PRODUK]. Awalnya, aku tidak menaruh harapan tinggi. Namun, semua berubah saat paketnya tiba dan aku melakukan unboxing.\n\nKesan pertama adalah kualitasnya. Material [MATERIAL] yang digunakan terasa sangat premium. Setiap sudut, setiap tombol, semuanya dibuat dengan presisi yang luar biasa. Ini adalah level pengerjaan yang berbeda.\n\nSaat mulai digunakan, aku semakin takjub. Fitur [FITUR1] dan [FITUR2] bekerja secara harmonis, memberikan pengalaman pengguna yang mulus dan menyenangkan. Semua masalah yang dulu aku hadapi dengan produk lain, seolah sirna begitu saja.\n\n[PRODUK] ini bukan lagi sekadar alat, tapi sudah menjadi bagian tak terpisahkan dari [AKTIVITAS] harianku. Ia membuktikan bahwa kualitas, desain, dan fungsionalitas bisa berjalan beriringan. Ini adalah puncak dari sebuah pencarian, dan aku ingin kamu juga merasakannya.`,
+                `Banyak orang bertanya kepadaku, "Apa rahasia untuk bisa tetap [MANFAAT_UTAMA] di tengah kesibukan?" Jawabannya tidak selalu rumit. Terkadang, ini hanya soal memiliki alat yang tepat.\n\nSelama ini, aku mengandalkan berbagai cara manual untuk mengatasi [MASALAH]. Tentu saja, itu menghabiskan banyak waktu dan seringkali hasilnya tidak maksimal. Aku tahu harus ada cara yang lebih baik.\n\nDan cara itu bernama [PRODUK]. Produk ini adalah definisi dari 'work smarter, not harder'. Ia mengambil alih semua pekerjaan berat, membiarkanku fokus pada hal-hal yang lebih penting.\n\nKeunggulan utamanya terletak pada [TEKNOLOGI] canggih yang diusungnya. Teknologi ini memungkinkan [PRODUK] untuk bekerja lebih cepat dan lebih efisien daripada produk sejenis lainnya di pasaran.\n\nSelain itu, desainnya yang [SIFAT_DESAIN] membuatnya mudah disimpan dan tidak memakan banyak tempat. Ini adalah detail kecil yang sangat aku hargai sebagai seseorang yang menyukai kerapian.\n\nJadi, jika kamu ingin meningkatkan kualitas hidup dan mendapatkan lebih banyak waktu luang, berhentilah melakukan semuanya dengan cara yang sulit. Sudah saatnya kamu beralih ke solusi cerdas seperti [PRODUK].`
+            ]
+        };
+
+        // --- NEW CATEGORY-SPECIFIC PLACEHOLDERS ---
+        const placeholders = {
+            common: {
+                SIFAT_DESAIN: ["minimalis dan elegan", "modern dan futuristik", "klasik dan timeless", "industrial dan kokoh", "ringkas dan portabel"],
+                TUJUAN_INVESTASI: ["kenyamanan jangka panjang", "efisiensi kerja", "penampilan profesional", "kesehatan", "kemudahan hidup"]
+            },
+            Elektronik: {
+                MASALAH: ["performa lemot", "baterai cepat habis", "penyimpanan penuh", "kabel berantakan", "koneksi tidak stabil"],
+                MANFAAT_UTAMA: ["meningkatkan produktivitas", "menyederhanakan pekerjaan", "memberikan hiburan berkualitas", "menjaga tetap terhubung"],
+                AKTIVITAS: ["bekerja multitasking", "bermain game", "membuat konten", "menonton film", "meeting online"],
+                FITUR1: ["prosesor super cepat", "daya tahan baterai seharian", "layar Super Retina XDR", "kamera beresolusi tinggi"],
+                FITUR2: ["sistem pendingin canggih", "pengisian daya nirkabel", "konektivitas 5G", "desain tahan air"],
+                MATERIAL: ["Titanium Alloy", "Gorilla Glass Victus", "Aluminium kelas penerbangan", "Polikarbonat"],
+                CONTOH_PENGGUNAAN: ["mengedit video tanpa lag", "bermain game dengan grafis maksimal", "mengambil foto malam hari yang jernih"],
+                TEKNOLOGI: ["AI-enhanced", "Bluetooth 5.3", "Quantum Dot Display", "Fast Charging 120W"]
+            },
+            'Home Living': {
+                MASALAH: ["ruangan terasa sempit", "rumah berantakan", "suasana rumah monoton", "sulit mencari barang"],
+                MANFAAT_UTAMA: ["membuat rumah lebih nyaman", "meningkatkan estetika ruangan", "mengoptimalkan ruang penyimpanan", "menciptakan suasana hangat"],
+                AKTIVITAS: ["bersantai setelah bekerja", "menerima tamu", "bekerja dari rumah", "memasak untuk keluarga"],
+                FITUR1: ["desain multifungsi", "material ramah lingkungan", "sistem modular", "perakitan yang mudah"],
+                FITUR2: ["hemat tempat", "perawatan yang mudah", "warna yang menenangkan", "konstruksi yang kokoh"],
+                MATERIAL: ["Kayu Jati Solid", "Rotan Alami", "Kain Beludru Halus", "Marmer Sintetis"],
+                CONTOH_PENGGUNAAN: ["menyimpan semua barang agar rapi", "menjadi pusat perhatian di ruang tamu", "membuat tidur lebih nyenyak"],
+                TEKNOLOGI: ["sistem soft-close", "lapisan anti gores", "cat anti noda", "pencahayaan LED hemat energi"]
+            },
+            Fashion: {
+                MASALAH: ["susah mix and match", "outfit monoton", "bahan tidak nyaman", "ukuran tidak pas", "ketinggalan tren"],
+                MANFAAT_UTAMA: ["meningkatkan kepercayaan diri", "menunjang penampilan profesional", "memberikan kenyamanan sepanjang hari", "membuat OOTD lebih standout"],
+                AKTIVITAS: ["pergi ke kantor", "hangout bareng teman", "datang ke acara formal", "berlibur santai"],
+                FITUR1: ["bahan yang adem (breathable)", "potongan yang pas di badan", "desain timeless", "jahitan yang rapi dan kuat"],
+                FITUR2: ["tidak mudah kusut", "warna yang tidak mudah luntur", "detail yang unik", "fleksibilitas bahan"],
+                MATERIAL: ["Katun Combed 30s", "Linen Premium", "Kain Sutra", "Denim Berkualitas Tinggi"],
+                CONTOH_PENGGUNAAN: ["dipakai untuk meeting penting", "menjadi andalan saat traveling", "membuatmu jadi pusat perhatian di pesta"],
+                TEKNOLOGI: ["kain anti-bau", "bahan anti-UV", "teknologi quick-dry", "bahan anti noda"]
+            },
+            'Perawatan Kecantikan': {
+                MASALAH: ["kulit kusam dan kering", "jerawat yang tak kunjung hilang", "tanda-tanda penuaan dini", "warna kulit tidak merata"],
+                MANFAAT_UTAMA: ["mencerahkan kulit wajah", "melembapkan kulit secara mendalam", "mengatasi masalah jerawat", "menjaga keremajaan kulit"],
+                AKTIVITAS: ["memulai hari dengan wajah segar", "merawat diri setelah lelah bekerja", "mempersiapkan kulit sebelum makeup"],
+                FITUR1: ["kandungan Niacinamide", "diperkaya Hyaluronic Acid", "formula non-komedogenik", "tekstur ringan dan cepat meresap"],
+                FITUR2: ["bebas paraben dan alkohol", "teruji secara dermatologis", "aroma yang menenangkan", "kemasan higienis"],
+                MATERIAL: ["Ekstrak Centella Asiatica", "Vitamin C", "Retinol", "Ceramide"],
+                CONTOH_PENGGUNAAN: ["menjadi bagian dari rutinitas skincare pagi dan malam", "memberikan hidrasi instan pada kulit", "menyamarkan noda hitam bekas jerawat"],
+                TEKNOLOGI: ["teknologi micro-encapsulation", "formula pH-balanced", "slow-release formula", "nano-particle technology"]
+            },
+            'Perlengkapan Kebersihan': {
+                MASALAH: ["debu dan kotoran membandel", "membersihkan rumah butuh waktu lama", "produk pembersih yang boros", "bau tidak sedap"],
+                MANFAAT_UTAMA: ["membersihkan secara efektif dan cepat", "membuat rumah bebas kuman", "menghemat tenaga", "menciptakan lingkungan yang sehat"],
+                AKTIVITAS: ["membersihkan seluruh rumah", "mengatasi tumpahan mendadak", "menjaga kebersihan kamar mandi dan dapur"],
+                FITUR1: ["formula konsentrat tinggi", "daya sedot yang kuat", "desain ergonomis", "kemampuan desinfektan"],
+                FITUR2: ["aman untuk anak-anak dan hewan peliharaan", "aroma segar yang tahan lama", "ujung sikat yang fleksibel", "baterai yang tahan lama"],
+                MATERIAL: ["Cairan pembersih biodegradable", "Kain mikrofiber", "Plastik ABS daur ulang", "Motor tanpa sikat (brushless)"],
+                CONTOH_PENGGUNAAN: ["mengangkat noda membandel di lantai", "menyedot debu di sudut-sudut sulit", "membuat kamar mandi wangi sepanjang hari"],
+                TEKNOLOGI: ["teknologi uap panas", "sensor debu otomatis", "sistem filtrasi HEPA", "formula anti-bakteri"]
+            }
+        };
+
+        // --- FUNCTIONS ---
+
+        function titleCase(str) {
+            return str.toLowerCase().split(' ').map(function(word) {
+                return (word.charAt(0).toUpperCase() + word.slice(1));
+            }).join(' ');
+        }
+
+        function parseProductInfoFromUrl(url) {
+            try {
+                const path = new URL(url).pathname;
+                const segments = path.split('/').filter(s => s && isNaN(s));
+                
+                if (segments.length === 0) return { product: 'Produk Pilihan' };
+
+                let productName = segments[segments.length - 1]
+                    .replace(/-/g, ' ')
+                    .replace(/_/g, ' ')
+                    .replace(/(\d+gb|\d+tb)/g, ' $1')
+                    .trim();
+                
+                return {
+                    product: titleCase(productName)
+                };
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function getPool(source, category) {
+            const categoryKey = category.replace(/ /g, '');
+            let pool = [...(source.all || [])];
+            if (source[categoryKey]) {
+                pool = [...pool, ...source[categoryKey]];
+            }
+            return pool.sort(() => 0.5 - Math.random());
+        }
+
+        function generateScript() {
+            const resultCount = parseInt(document.getElementById('resultCount').value);
+            const languageStyle = document.getElementById('languageStyle').value;
+            const contentLength = document.getElementById('contentLength').value;
+            const productInput = document.getElementById('productInput').value;
+            const productCategory = document.getElementById('productCategory').value;
+
+            if (!productInput) {
+                alert("Silakan masukkan link atau nama produk terlebih dahulu.");
+                return;
+            }
+
+            loadingSpinner.classList.remove('hidden');
+            resultsContainer.innerHTML = '';
+            exportButtonsContainer.classList.add('hidden');
+
+            let productInfo;
+            const isUrl = productInput.startsWith('http') || productInput.startsWith('www.');
+            
+            if (isUrl) {
+                productInfo = parseProductInfoFromUrl(productInput);
+                if (!productInfo) {
+                    productInfo = { product: "Produk dari Link" };
+                }
+            } else {
+                productInfo = { product: titleCase(productInput) };
+            }
+
+
+            setTimeout(() => {
+                let generatedHTML = '';
+                
+                let hookPool = getPool(hooks, productCategory);
+                let ctaPool = getPool(ctas, productCategory);
+                let bodyPool = [...(bodies[contentLength] || [])].sort(() => 0.5 - Math.random());
+
+                for (let i = 0; i < resultCount; i++) {
+                    if (hookPool.length === 0) hookPool = getPool(hooks, productCategory);
+                    if (ctaPool.length === 0) ctaPool = getPool(ctas, productCategory);
+                    if (bodyPool.length === 0) bodyPool = [...(bodies[contentLength] || [])].sort(() => 0.5 - Math.random());
+
+                    const hook = hookPool.pop() || "Lihat produk keren ini!";
+                    const cta = ctaPool.pop() || "Cek link di bio sekarang!";
+                    const body = bodyPool.pop() || "Produk [PRODUK] ini sangat berkualitas dan direkomendasikan untuk Anda.";
+
+                    let finalScript = `<strong>${hook}</strong>\n\n${body}\n\n<strong>${cta}</strong>`
+                        .replace(/\[PRODUK\]/g, productInfo.product)
+                        .replace(/\[KATEGORI\]/g, productCategory);
+                    
+                    // --- NEW LOGIC FOR CATEGORY-SPECIFIC PLACEHOLDERS ---
+                    const categoryKey = productCategory.replace(/ /g, '');
+                    const categoryPlaceholders = placeholders[categoryKey] || {};
+                    const combinedPlaceholders = { ...placeholders.common, ...categoryPlaceholders };
+
+                    finalScript = finalScript.replace(/\[([^\]]+)\]/g, (match, p1) => {
+                        const placeholderKey = p1.toUpperCase();
+                        const options = combinedPlaceholders[placeholderKey];
+                        if (options && options.length > 0) {
+                            return options[Math.floor(Math.random() * options.length)];
+                        }
+                        return p1; 
+                    });
+                    
+                    generatedHTML += `
+                        <div class="card bg-white dark:bg-slate-800 p-5 rounded-xl shadow-md mb-4 fade-in border border-slate-200 dark:border-slate-700" style="animation-delay: ${i * 100}ms">
+                            <div class="script-content text-slate-800 dark:text-slate-200 mb-4 whitespace-pre-line">
+                                ${finalScript}
+                            </div>
+                            <div class="flex items-center justify-end">
+                                <button class="copy-btn bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 text-slate-700 dark:text-slate-200 font-semibold py-2 px-4 rounded-lg flex items-center transition-colors">
+                                    <i class="fas fa-copy mr-2"></i>Salin
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                loadingSpinner.classList.add('hidden');
+                resultsContainer.innerHTML = generatedHTML;
+                exportButtonsContainer.classList.remove('hidden');
+                
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', handleCopyClick);
+                });
+
+            }, 1500);
+        }
+
+        function handleCopyClick(event) {
+            const card = event.target.closest('.card');
+            const script = card.querySelector('.script-content').innerText;
+            
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = script;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            notification.classList.remove('hidden');
+            notification.classList.add('opacity-100');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+                notification.classList.remove('opacity-100');
+            }, 2000);
+        }
+
+        function exportToWord() {
+            const results = document.querySelectorAll('#results .card');
+            if (results.length === 0) {
+                alert("Tidak ada konten untuk diekspor.");
+                return;
+            }
+
+            const headerColor = '#0F172A';
+            const textColor = '#334155';
+            const bgColor = '#FFFFFF';
+
+            let content = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset='utf-8'><title>Export HTML to Word</title>
+                <style>
+                    body { font-family: Arial, sans-serif; background-color: ${bgColor}; color: ${textColor}; }
+                    h1, h3 { color: ${headerColor}; }
+                    p { color: ${textColor}; margin-bottom: 12px; }
+                </style>
+                </head>
+                <body>
+                <h1>Skrip Konten Affiliate</h1>
+                <p>Dibuat pada: ${new Date().toLocaleString('id-ID')}</p>
+                <p>Input Produk: ${document.getElementById('productInput').value || 'Tidak ada'}</p>
+                <hr/>
+            `;
+
+            results.forEach((card, index) => {
+                const scriptHTML = card.querySelector('.script-content').innerHTML.replace(/\n\n/g, '</p><p>');
+                content += `
+                    <h3>Skrip ${index + 1}</h3>
+                    <p>${scriptHTML}</p>
+                    <br/>
+                `;
+            });
+
+            content += "</body></html>";
+            
+            const url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(content);
+            const filename = `skrip_afiliasi_${Date.now()}.doc`;
+            const downloadLink = document.createElement("a");
+            document.body.appendChild(downloadLink);
+            downloadLink.href = url;
+            downloadLink.download = filename;
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+        
+        function exportToPdf() {
+            const resultsEl = document.getElementById('results');
+            if (resultsEl.children.length === 0) {
+                alert("Tidak ada konten untuk diekspor.");
+                return;
+            }
+            
+            loadingSpinner.classList.remove('hidden');
+
+            html2canvas(resultsEl, { 
+                scale: 2,
+                useCORS: true,
+                backgroundColor: document.documentElement.classList.contains('dark') ? '#1e293b' : '#f0f9ff'
+            }).then(canvas => {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const imgWidth = pdfWidth - 20;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                let position = 15;
+
+                pdf.setFont("Helvetica", "bold");
+                pdf.setFontSize(18);
+                pdf.text("Skrip Konten Affiliate", 10, position);
+                position += 10;
+                
+                pdf.setFont("Helvetica", "normal");
+                pdf.setFontSize(10);
+                pdf.text(`Input Produk: ${document.getElementById('productInput').value || 'Tidak ada'}`, 10, position);
+                position += 5;
+                pdf.line(10, position, pdfWidth - 10, position);
+                position += 10;
+
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
+                
+                loadingSpinner.classList.add('hidden');
+                pdf.save(`skrip_afiliasi_${Date.now()}.pdf`);
+            }).catch(err => {
+                loadingSpinner.classList.add('hidden');
+                console.error("Error generating PDF:", err);
+                alert("Gagal membuat PDF. Silakan coba lagi.");
+            });
+        }
+
+        // --- EVENT LISTENERS ---
+        generateBtn.addEventListener('click', generateScript);
+        exportWordBtn.addEventListener('click', exportToWord);
+        exportPdfBtn.addEventListener('click', exportToPdf);
+        themeToggleBtn.addEventListener('click', () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            if (isDarkMode) {
+                applyTheme('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                applyTheme('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+    </script>
+</body>
+</html>
